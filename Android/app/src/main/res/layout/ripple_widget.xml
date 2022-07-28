@@ -1,0 +1,48 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    >
+
+    <RelativeLayout
+        android:id="@+id/ly_container"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/round_frame"
+        >
+
+        <ImageView
+            android:id="@+id/img_logo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/logo" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/img_logo"
+            android:text="Your Searches Fight Hunger..."
+            android:textSize="15dp" />
+        <ImageView
+            android:id="@+id/img_search"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_search"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="5dp"
+            android:layout_centerVertical="true"
+            />
+        <ImageView
+            android:id="@+id/img_mic"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_mic"
+            android:layout_toLeftOf="@+id/img_search"
+            android:layout_centerVertical="true"
+            />
+    </RelativeLayout>
+</RelativeLayout>

@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">RippleSearch</string>
+    <string name="setup_guide"><![CDATA[1. On a Home screen, touch and hold an empty space.\n2. Tap Widgets .\n3. Touch and hold a widget. You’ll get images of your Home screens.\n4. Slide the widget to where you want it. Lift your finger.]]></string>
+</resources>
