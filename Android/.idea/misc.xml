@@ -3,13 +3,19 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Projects/Freelancer/RippleSearch/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.196" />
+        <entry key="..\:/Projects/Freelancer/RippleSearch/app/src/main/res/drawable-v24/ic_launcher_foreground1.xml" value="0.1965" />
         <entry key="..\:/Projects/Freelancer/RippleSearch/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1365" />
         <entry key="..\:/Projects/Freelancer/RippleSearch/app/src/main/res/drawable/round_btn.xml" value="0.1855" />
         <entry key="..\:/Projects/Freelancer/RippleSearch/app/src/main/res/drawable/round_frame.xml" value="0.205" />
         <entry key="..\:/Projects/Freelancer/RippleSearch/app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="..\:/Projects/Freelancer/RippleSearch/app/src/main/res/layout/activity_mic.xml" value="0.14308363059849386" />
         <entry key="..\:/Projects/Freelancer/RippleSearch/app/src/main/res/layout/activity_search.xml" value="0.25" />
         <entry key="..\:/Projects/Freelancer/RippleSearch/app/src/main/res/layout/cell_widget.xml" value="0.24682971014492755" />
+        <entry key="..\:/Projects/Freelancer/RippleSearch/app/src/main/res/layout/mic_popup.xml" value="0.2753623188405797" />
         <entry key="..\:/Projects/Freelancer/RippleSearch/app/src/main/res/layout/ripple_widget.xml" value="0.33" />
+        <entry key="..\:/Projects/Freelancer/RippleSearch/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.196" />
+        <entry key="..\:/Projects/Freelancer/RippleSearch/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1965" />
       </map>
     </option>
   </component>

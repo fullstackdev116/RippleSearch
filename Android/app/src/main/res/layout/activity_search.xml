@@ -24,16 +24,17 @@
 
         <EditText
             android:id="@+id/edit_query"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_toLeftOf="@+id/btn_cancel"
             android:layout_toRightOf="@+id/btn_logo"
             android:background="@android:color/transparent"
+            android:focusable="true"
             android:hint="Your Searches Fight Hunger..."
             android:imeOptions="actionSearch"
             android:singleLine="true"
-            android:focusable="true"
             android:textSize="17dp" />
         <Button
             android:id="@+id/btn_search"
@@ -52,5 +53,13 @@
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/btn_search"
             android:background="@drawable/ic_mic" />
+        <ImageButton
+            android:id="@+id/btn_cancel"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/btn_search"
+            android:visibility="invisible"
+            android:background="@drawable/ic_cancel" />
     </RelativeLayout>
 </RelativeLayout>

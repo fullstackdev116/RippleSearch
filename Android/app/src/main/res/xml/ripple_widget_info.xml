@@ -2,7 +2,7 @@
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:initialKeyguardLayout="@layout/ripple_widget"
     android:initialLayout="@layout/ripple_widget"
-    android:minWidth="320dp"
+    android:minWidth="280dp"
     android:minHeight="36dp"
     android:previewImage="@drawable/widget_logo"
     android:resizeMode="horizontal|vertical"

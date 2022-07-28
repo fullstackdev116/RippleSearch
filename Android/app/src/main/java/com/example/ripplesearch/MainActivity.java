@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 App.openUrl("https://www.ripplesearch.com/", MainActivity.this);
                 finish();
+//                Intent intent = new Intent(MainActivity.this, MicActivity.class);
+//                startActivity(intent);
             }
         });
     }

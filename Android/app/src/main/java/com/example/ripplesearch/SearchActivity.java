@@ -17,6 +17,8 @@ import android.os.Looper;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -33,7 +35,7 @@ import java.util.ArrayList;
 
 public class SearchActivity extends AppCompatActivity {
     EditText edit_query;
-    ImageButton btn_mic;
+    ImageButton btn_mic, btn_cancel;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -51,17 +53,18 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
         btn_mic = findViewById(R.id.btn_mic);
-        btn_mic.setOnTouchListener(new View.OnTouchListener() {
+        btn_cancel = findViewById(R.id.btn_cancel);
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Log.d("touch", "down");
-                    record_start();
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    record_stop();
-                    Log.d("touch", "up");
-                }
-                return false;
+            public void onClick(View v) {
+                edit_query.setText("");
+            }
+        });
+        btn_mic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SearchActivity.this, MicActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -75,158 +78,32 @@ public class SearchActivity extends AppCompatActivity {
                 return false;
             }
         });
-        if (setPermission()) {
-            init_recognizer();
-        }
+        edit_query.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (edit_query.getText().length() == 0) {
+                    btn_cancel.setVisibility(View.INVISIBLE);
+                    btn_mic.setVisibility(View.VISIBLE);
+                } else {
+                    btn_cancel.setVisibility(View.VISIBLE);
+                    btn_mic.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
         edit_query.requestFocus();
         App.showKeyboard(this);
     }
-    public boolean setPermission() {
-        if (ContextCompat.checkSelfPermission(this, RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED) {
-            ArrayList<String> arrPermissionRequests = new ArrayList<>();
-            arrPermissionRequests.add(RECORD_AUDIO);
-            ActivityCompat.requestPermissions(this, arrPermissionRequests.toArray(new String[arrPermissionRequests.size()]), 201);
-            return false;
-        }
-        return true;
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        String permission_result = "";
-        switch (requestCode) {
-            case 201: {
-                if ((grantResults.length > 0) && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    permission_result = "Microphone Access Allowed!";
-                    init_recognizer();
-                } else {
-                    permission_result = "Microphone Access Denied!";
-                }
-                break;
-            }
-            default:
-                permission_result = "Microphone Access Denied!";
-        }
-        Toast.makeText(SearchActivity.this, permission_result, Toast.LENGTH_SHORT);
-    }
-    SpeechRecognizer recognizer;
-    void init_recognizer() {
 
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                // Code here will run in UI thread
-                if(!SpeechRecognizer.isRecognitionAvailable(SearchActivity.this)) {
-                    Toast.makeText(SearchActivity.this, "SpeechRecognizer is not available", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                recognizer = SpeechRecognizer
-                        .createSpeechRecognizer(SearchActivity.this);
-                RecognitionListener listener = new RecognitionListener() {
-                    @Override
-                    public void onResults(Bundle results) {
-                        ArrayList<String> voiceResults = results
-                                .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                        if (voiceResults == null) {
-                            System.out.println("No voice results");
-                        } else {
-                            System.out.println("Printing matches: ");
-                            for (String match : voiceResults) {
-                                Toast.makeText(getApplicationContext(), match, Toast.LENGTH_SHORT).show();
-                                edit_query.setText(match);
-                                System.out.println(match);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onReadyForSpeech(Bundle params) {
-                        System.out.println("Ready for speech");
-                    }
-
-                    /**
-                     *  ERROR_NETWORK_TIMEOUT = 1;
-                     *  ERROR_NETWORK = 2;
-                     *  ERROR_AUDIO = 3;
-                     *  ERROR_SERVER = 4;
-                     *  ERROR_CLIENT = 5;
-                     *  ERROR_SPEECH_TIMEOUT = 6;
-                     *  ERROR_NO_MATCH = 7;
-                     *  ERROR_RECOGNIZER_BUSY = 8;
-                     *  ERROR_INSUFFICIENT_PERMISSIONS = 9;
-                     *
-                     * @param error code is defined in SpeechRecognizer
-                     */
-                    @Override
-                    public void onError(int error) {
-                        System.err.println("Error listening for speech: " + error);
-                    }
-
-                    @Override
-                    public void onBeginningOfSpeech() {
-                        System.out.println("Speech starting");
-                    }
-
-                    @Override
-                    public void onBufferReceived(byte[] buffer) {
-                        // TODO Auto-generated method stub
-
-                    }
-
-                    @Override
-                    public void onEndOfSpeech() {
-                        // TODO Auto-generated method stub
-
-                    }
-
-                    @Override
-                    public void onEvent(int eventType, Bundle params) {
-                        // TODO Auto-generated method stub
-
-                    }
-
-                    @Override
-                    public void onPartialResults(Bundle partialResults) {
-                        // TODO Auto-generated method stub
-
-                    }
-
-                    @Override
-                    public void onRmsChanged(float rmsdB) {
-                        // TODO Auto-generated method stub
-
-                    }
-                };
-                recognizer.setRecognitionListener(listener);
-            }
-        });
-
-
-
-    }
-    void record_start() {
-        if (recognizer == null) {
-            Toast.makeText(SearchActivity.this, "SpeechRecognizer is not available", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        btn_mic.setBackgroundResource(R.drawable.ic_mic_record);
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
-                "com.domain.app");
-        recognizer.startListening(intent);
-
-    }
-    void record_stop() {
-        if (recognizer == null) {
-            Toast.makeText(SearchActivity.this, "SpeechRecognizer is not available", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        btn_mic.setBackgroundResource(R.drawable.ic_mic);
-        recognizer.stopListening();
-    }
     void do_search() {
         String query = edit_query.getText().toString().trim();
         if (query.length() == 0) {

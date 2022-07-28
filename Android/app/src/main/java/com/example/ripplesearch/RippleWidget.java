@@ -24,19 +24,23 @@ public class RippleWidget extends AppWidgetProvider {
     void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
-        Intent intent = new Intent(context, SearchActivity.class);
 //        Uri uri = Uri.parse(App.ripple_url); // missing 'http://' will cause crashed
 //        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, FLAG_IMMUTABLE);
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.ripple_widget);
+
+        Intent intent_search = new Intent(context, SearchActivity.class);
+        PendingIntent pendingIntent_search = PendingIntent.getActivity(context, 0, intent_search, FLAG_IMMUTABLE);
+        Intent intent_mic = new Intent(context, MicActivity.class);
+        PendingIntent pendingIntent_mic = PendingIntent.getActivity(context, 0, intent_mic, FLAG_IMMUTABLE);
+
+        views.setOnClickPendingIntent(R.id.ly_container, pendingIntent_search);
+        views.setOnClickPendingIntent(R.id.btn_mic, pendingIntent_mic);
 
 //        Intent serviceIntent = new Intent(context, WidgetService.class);
 //        serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 //        serviceIntent.setData(Uri.parse(serviceIntent.toUri(Intent.URI_INTENT_SCHEME)));
 
 //        views.setOnClickPendingIntent(R.id.btn_logo, getPendingSelfIntent(context, LogoClick));
-        views.setOnClickPendingIntent(R.id.ly_container, pendingIntent);
 
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
