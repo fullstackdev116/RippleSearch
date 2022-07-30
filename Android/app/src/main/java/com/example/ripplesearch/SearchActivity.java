@@ -55,9 +55,10 @@ public class SearchActivity extends AppCompatActivity {
         btn_search_big.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                App.query_from = "search";
-                Intent intent = new Intent(SearchActivity.this, MicActivity.class);
-                startActivity(intent);
+//                App.query_from = "search";
+//                Intent intent = new Intent(SearchActivity.this, MicActivity.class);
+//                startActivity(intent);
+                do_search();
             }
         });
         btn_mic = findViewById(R.id.btn_mic);
