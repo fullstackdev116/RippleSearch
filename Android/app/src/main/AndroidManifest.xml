@@ -31,12 +31,16 @@
         <activity
             android:name=".MicActivity"
             android:theme="@style/CustomBottomSheetDialogTheme"
-            android:exported="false" >
+            android:exported="true"
+            android:launchMode="singleInstance"
+            >
         </activity>
         <activity
             android:name=".SearchActivity"
             android:exported="true"
-            android:launchMode="singleInstance"></activity>
+            android:launchMode="singleInstance"
+            >
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"

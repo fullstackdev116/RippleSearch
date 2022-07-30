@@ -42,14 +42,22 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-
         edit_query = findViewById(R.id.edit_query);
 
-        Button btn_search = findViewById(R.id.btn_search);
+        ImageButton btn_search = findViewById(R.id.btn_search);
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 do_search();
+            }
+        });
+        ImageButton btn_search_big = findViewById(R.id.btn_search_big);
+        btn_search_big.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                App.query_from = "search";
+                Intent intent = new Intent(SearchActivity.this, MicActivity.class);
+                startActivity(intent);
             }
         });
         btn_mic = findViewById(R.id.btn_mic);
@@ -63,6 +71,7 @@ public class SearchActivity extends AppCompatActivity {
         btn_mic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                App.query_from = "search";
                 Intent intent = new Intent(SearchActivity.this, MicActivity.class);
                 startActivity(intent);
             }
@@ -100,8 +109,22 @@ public class SearchActivity extends AppCompatActivity {
                 }
             }
         });
-        edit_query.requestFocus();
+//        edit_query.requestFocus();
         App.showKeyboard(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        edit_query.setText(App.query);
+        App.query_from = "";
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        App.query_from = "";
+        App.query = "";
     }
 
     void do_search() {

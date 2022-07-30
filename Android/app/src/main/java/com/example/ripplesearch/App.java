@@ -40,6 +40,8 @@ public class App extends Application {
     private static Context mContext;
     public static String is_checked = "IS_CHECKED";
     public static String ripple_url = "https://www.ripplesearch.com/";
+    public static String query = "";
+    public static String query_from = "";
 
     @Override
     public void onCreate() {

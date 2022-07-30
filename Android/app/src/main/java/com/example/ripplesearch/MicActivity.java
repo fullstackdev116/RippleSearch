@@ -23,19 +23,24 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
 
 public class MicActivity extends Activity {
     BottomSheetDialog mBottomSheetDialog;
-    ImageButton btn_mic, btn_search;
-    TextView txt_logo, txt_query;
-
-    boolean isRecord = false;
+    ImageButton btn_mic;
+    ImageView img_mic;
+    TextView txt_query;
+    boolean isRecord = true;
+    String msg_result = "Try saying something";
+    Handler handler = new Handler();
+    RecognitionListener listener;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -47,64 +52,54 @@ public class MicActivity extends Activity {
         mBottomSheetDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
+                if (recognizer != null) {
+                    recognizer.cancel();
+                    recog_handler.removeCallbacksAndMessages(null);
+                    listener = null;
+                    recognizer = null;
+                }
+                btn_mic.setBackgroundResource(R.drawable.ic_mic_circle);
+                txt_query.setText("Try saying something.");
                 mBottomSheetDialog = null;
                 finish();
             }
         });
         mBottomSheetDialog.show();
 
+        img_mic = mBottomSheetDialog.findViewById(R.id.img_mic);
         btn_mic = mBottomSheetDialog.findViewById(R.id.btn_mic);
-        btn_search = mBottomSheetDialog.findViewById(R.id.btn_search);
-        btn_search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String query = txt_query.getText().toString().trim();
-                if (query.length() == 0) {
-                    Toast.makeText(MicActivity.this, "Please say something...", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                String search_url = "https://www.bing.com/search?q="+query;
-                App.openUrl(search_url, MicActivity.this);
-            }
-        });
-        txt_logo = mBottomSheetDialog.findViewById(R.id.txt_logo);
         txt_query = mBottomSheetDialog.findViewById(R.id.txt_query);
         btn_mic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 isRecord = !isRecord;
                 if (isRecord) {
-                    txt_logo.setVisibility(View.VISIBLE);
-                    btn_search.setVisibility(View.GONE);
-                    txt_query.setVisibility(View.GONE);
-                    txt_query.setText("");
+                    txt_query.setText("Try saying something");
                     record_start();
                 } else {
-                    txt_logo.setVisibility(View.GONE);
-                    btn_search.setVisibility(View.VISIBLE);
-                    txt_query.setVisibility(View.VISIBLE);
-                    txt_query.setText("");
                     record_stop();
                 }
             }
         });
-//        btn_mic.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//                    Log.d("touch", "down");
-//                    record_start();
-//                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-//                    record_stop();
-//                    Log.d("touch", "up");
-//                }
-//                return false;
-//            }
-//        });
+    }
+    void setTimeLimit() {
+        handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Write whatever to want to do after delay specified (1 sec)
+                record_stop();
+            }
+        }, 3000);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
         if (setPermission()) {
             init_recognizer();
         }
     }
+
     public boolean setPermission() {
         if (ContextCompat.checkSelfPermission(this, RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED) {
             ArrayList<String> arrPermissionRequests = new ArrayList<>();
@@ -125,18 +120,21 @@ public class MicActivity extends Activity {
                     init_recognizer();
                 } else {
                     permission_result = "Microphone Access Denied!";
+                    mBottomSheetDialog.dismiss();
                 }
                 break;
             }
             default:
                 permission_result = "Microphone Access Denied!";
         }
-        Toast.makeText(MicActivity.this, permission_result, Toast.LENGTH_SHORT);
+        Toast.makeText(getApplicationContext(), permission_result, Toast.LENGTH_SHORT);
     }
     SpeechRecognizer recognizer;
+    Handler recog_handler = new Handler(Looper.getMainLooper());
     void init_recognizer() {
-
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
+        if (recog_handler != null) recog_handler.removeCallbacksAndMessages(null);
+        recog_handler = new Handler(Looper.getMainLooper());
+        recog_handler.post(new Runnable() {
             @Override
             public void run() {
                 // Code here will run in UI thread
@@ -146,21 +144,46 @@ public class MicActivity extends Activity {
                 }
                 recognizer = SpeechRecognizer
                         .createSpeechRecognizer(MicActivity.this);
-                RecognitionListener listener = new RecognitionListener() {
+                listener = new RecognitionListener() {
                     @Override
                     public void onResults(Bundle results) {
                         ArrayList<String> voiceResults = results
                                 .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+//                        if (voiceResults == null) {
+//                            System.out.println("No voice results");
+//                            Toast.makeText(getApplicationContext(), "silence..", Toast.LENGTH_SHORT).show();
+//                        } else {
+//                            System.out.println("Printing matches: ");
+//                            for (String match : voiceResults) {
+//                                String result_str = "";
+//                                if (match.length() == 0) {
+//                                    result_str = "Silence ..........";
+//                                } else {
+//                                    result_str = match;
+//                                }
+//                                Toast.makeText(getApplicationContext(), result_str, Toast.LENGTH_SHORT).show();
+//                                txt_query.setText(result_str);
+//                                System.out.println(match);
+//                            }
+//                        }
+//                        Toast.makeText(MicActivity.this, "onResults :"+voiceResults.get(0), Toast.LENGTH_LONG).show();
+                        isRecord = false;
+                        img_mic.setVisibility(View.GONE);
+                        btn_mic.setVisibility(View.VISIBLE);
+                        btn_mic.setBackgroundResource(R.drawable.ic_mic_circle_record);
                         if (voiceResults == null) {
-                            System.out.println("No voice results");
+                            msg_result = "Didn't catch that. Try speaking again.";
                         } else {
-                            System.out.println("Printing matches: ");
-                            for (String match : voiceResults) {
-                                Toast.makeText(getApplicationContext(), match, Toast.LENGTH_SHORT).show();
-                                txt_query.setText(match);
-                                System.out.println(match);
+                            msg_result = voiceResults.get(0);
+                            App.query = msg_result;
+                            if (!App.query_from.equals("search")) {
+                                Intent intent = new Intent(MicActivity.this, SearchActivity.class);
+                                intent.putExtra("query", voiceResults.get(0));
+                                startActivity(intent);
                             }
+                            mBottomSheetDialog.dismiss();
                         }
+                        txt_query.setText(msg_result);
                     }
 
                     @Override
@@ -184,10 +207,53 @@ public class MicActivity extends Activity {
                     @Override
                     public void onError(int error) {
                         System.err.println("Error listening for speech: " + error);
+                        switch (error) {
+                            case 1:
+                                msg_result = "ERROR_NETWORK_TIMEOUT";
+                                break;
+                            case 2:
+                                msg_result = "ERROR_NETWORK";
+                                break;
+                            case 3:
+                                msg_result = "ERROR_AUDIO";
+                                break;
+                            case 4:
+                                msg_result = "ERROR_SERVER";
+                                break;
+                            case 5:
+                                msg_result = "ERROR_CLIENT";
+                                break;
+                            case 6:
+                                msg_result = "ERROR_SPEECH_TIMEOUT";
+                                break;
+                            case 7:
+                                msg_result = "ERROR_NO_MATCH";
+                                msg_result = "Didn't catch that. Try speaking again.";
+                                break;
+                            case 8:
+                                msg_result = "ERROR_RECOGNIZER_BUSY";
+                                break;
+                            case 9:
+                                msg_result = "ERROR_INSUFFICIENT_PERMISSIONS";
+                                break;
+                        }
+                        txt_query.setText(msg_result);
+                        isRecord = false;
+                        img_mic.setVisibility(View.GONE);
+                        btn_mic.setVisibility(View.VISIBLE);
+                        btn_mic.setBackgroundResource(R.drawable.ic_mic_circle_record);
+
+//                        App.query = "result";
+//                        if (!App.query_from.equals("search")) {
+//                            Intent intent = new Intent(MicActivity.this, SearchActivity.class);
+//                            startActivity(intent);
+//                        }
+//                        mBottomSheetDialog.dismiss();
                     }
 
                     @Override
                     public void onBeginningOfSpeech() {
+                        txt_query.setText("");
                         System.out.println("Speech starting");
                     }
 
@@ -200,7 +266,11 @@ public class MicActivity extends Activity {
                     @Override
                     public void onEndOfSpeech() {
                         // TODO Auto-generated method stub
-
+//                        Toast.makeText(MicActivity.this, "Speech End", Toast.LENGTH_LONG).show();
+//                        isRecord = false;
+//                        img_mic.setVisibility(View.GONE);
+//                        btn_mic.setVisibility(View.VISIBLE);
+//                        btn_mic.setBackgroundResource(R.drawable.ic_mic_circle_record);
                     }
 
                     @Override
@@ -212,6 +282,19 @@ public class MicActivity extends Activity {
                     @Override
                     public void onPartialResults(Bundle partialResults) {
                         // TODO Auto-generated method stub
+                        final ArrayList<String> partialData = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+
+                        if (partialData != null) {
+                            String word = partialData.get(partialData.size() - 1);
+                            if (word.replaceAll("\\s", "").isEmpty()) {
+                                word = " ";
+                            }
+                            String txt = txt_query.getText().toString();
+                            txt += word;
+                            txt_query.setText(txt);
+//                            Toast.makeText(MicActivity.this, word, Toast.LENGTH_LONG).show();
+                        }
+
 
                     }
 
@@ -222,6 +305,13 @@ public class MicActivity extends Activity {
                     }
                 };
                 recognizer.setRecognitionListener(listener);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Write whatever to want to do after delay specified (1 sec)
+                        record_start();
+                    }
+                }, 100);
             }
         });
 
@@ -233,21 +323,24 @@ public class MicActivity extends Activity {
             Toast.makeText(MicActivity.this, "SpeechRecognizer is not available", Toast.LENGTH_SHORT).show();
             return;
         }
-        btn_mic.setBackgroundResource(R.drawable.ic_mic_circle_record);
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
                 "com.domain.app");
         recognizer.startListening(intent);
-
+        btn_mic.setBackgroundResource(R.drawable.ic_mic_circle);
     }
     void record_stop() {
         if (recognizer == null) {
             Toast.makeText(MicActivity.this, "SpeechRecognizer is not available", Toast.LENGTH_SHORT).show();
             return;
         }
-        btn_mic.setBackgroundResource(R.drawable.ic_mic_circle);
-        recognizer.stopListening();
+        img_mic.setVisibility(View.VISIBLE);
+        Glide.with(this)
+                .load(R.drawable.loading)
+                .into(img_mic);
+        btn_mic.setVisibility(View.GONE);
+        btn_mic.setBackgroundResource(R.drawable.ic_mic_circle_record);
     }
 }

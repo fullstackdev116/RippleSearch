@@ -9,9 +9,12 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.widget.RelativeLayout;
 import android.widget.RemoteViews;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
 
 /**
  * Implementation of App Widget functionality.
@@ -21,17 +24,18 @@ public class RippleWidget extends AppWidgetProvider {
     private static final String MicClick = "MicClickTag";
     private static final String SearchClick = "SearchClickTag";
 
+    @RequiresApi(api = Build.VERSION_CODES.S)
     void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int appWidgetId) {
+                         int appWidgetId) {
 
 //        Uri uri = Uri.parse(App.ripple_url); // missing 'http://' will cause crashed
 //        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.ripple_widget);
 
         Intent intent_search = new Intent(context, SearchActivity.class);
-        PendingIntent pendingIntent_search = PendingIntent.getActivity(context, 0, intent_search, FLAG_IMMUTABLE);
+        PendingIntent pendingIntent_search = PendingIntent.getActivity(context, 0, intent_search, FLAG_MUTABLE);
         Intent intent_mic = new Intent(context, MicActivity.class);
-        PendingIntent pendingIntent_mic = PendingIntent.getActivity(context, 0, intent_mic, FLAG_IMMUTABLE);
+        PendingIntent pendingIntent_mic = PendingIntent.getActivity(context, 0, intent_mic, FLAG_MUTABLE);
 
         views.setOnClickPendingIntent(R.id.ly_container, pendingIntent_search);
         views.setOnClickPendingIntent(R.id.btn_mic, pendingIntent_mic);
@@ -55,6 +59,7 @@ public class RippleWidget extends AppWidgetProvider {
         intent.setAction(action);
         return PendingIntent.getBroadcast(context, 0, intent, FLAG_MUTABLE);
     }
+    @RequiresApi(api = Build.VERSION_CODES.S)
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
