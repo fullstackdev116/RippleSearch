@@ -1,3 +1,3 @@
 # RippleSearch
-Ripple Search Web Site
+Ripple Search Web Site\n
 Ripple Search Android Widget
