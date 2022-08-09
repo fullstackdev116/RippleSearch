@@ -1,2 +1,3 @@
 # RippleSearch
-Ripple Search Mobile Widget
+Ripple Search Web Site
+Ripple Search Android Widget
